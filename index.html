@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conseqence | Professional Music Production Software</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        :root {
+            --dark-bg: #0a0a0d;
+            --darker-bg: #040408;
+            --accent: #7e3aed;
+            --accent-light: #9e62ff;
+            --text: #e2e2e6;
+            --text-dim: #8c8c9a;
+            --gradient-start: #7e3aed;
+            --gradient-end: #3c7efa;
+            --space-glow-1: rgba(90, 50, 180, 0.15);
+            --space-glow-2: rgba(60, 126, 250, 0.15);
+            --star-color: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--text);
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(10, 10, 13, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(126, 58, 237, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(126, 58, 237, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding-top: 140px;
+            padding-bottom: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 140%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(126, 58, 237, 0.1) 0%, rgba(10, 10, 13, 0) 70%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--text), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 2.5rem;
+            max-width: 80%;
+        }
+
+        .hero-img {
+            flex: 1;
+            position: relative;
+        }
+
+        .hero-img img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 80px rgba(126, 58, 237, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .space-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(135deg, var(--darker-bg) 0%, #080818 50%, #0c0c20 100%);
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background-color: var(--star-color);
+            border-radius: 50%;
+            animation: twinkle 4s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0.2;
+            animation: pulse 15s infinite alternate ease-in-out;
+        }
+
+        .nebula-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--space-glow-1) 0%, transparent 70%);
+            top: -50px;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .nebula-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--space-glow-2) 0%, transparent 70%);
+            bottom: -100px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .nebula-3 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, var(--space-glow-1) 0%, transparent 70%);
+            top: 50%;
+            left: -50px;
+            animation-delay: -8s;
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, white, transparent);
+            animation: shooting 8s infinite linear;
+            opacity: 0;
+        }
+
+        .shooting-star-1 {
+            top: 15%;
+            left: 0;
+            animation-delay: 2s;
+            transform: rotate(15deg);
+        }
+
+        .shooting-star-2 {
+            top: 50%;
+            right: 10%;
+            animation-delay: 6s;
+            transform: rotate(-20deg);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.15; }
+            50% { transform: scale(1.1); opacity: 0.25; }
+            100% { transform: scale(1); opacity: 0.15; }
+        }
+
+        @keyframes shooting {
+            0% { transform: translateX(-100px) translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            20% { transform: translateX(calc(100vw + 100px)) translateY(20px); opacity: 0; }
+            100% { transform: translateX(calc(100vw + 100px)) translateY(20px); opacity: 0; }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background-color: var(--darker-bg);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 60px;
+        }
+
+        .feature-card {
+            background-color: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(126, 58, 237, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(126, 58, 237, 0.2);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: var(--text-dim);
+        }
+
+        /* Workflow Section */
+        .workflow {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .workflow-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .workflow-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .workflow-tab {
+            padding: 1rem 2rem;
+            background-color: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(126, 58, 237, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-tab.active {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+        }
+
+        .workflow-content {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .workflow-text {
+            flex: 1;
+        }
+
+        .workflow-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .workflow-description {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-dim);
+        }
+
+        .workflow-img {
+            flex: 1;
+        }
+
+        .workflow-img img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 80px rgba(126, 58, 237, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 0;
+            background-color: var(--darker-bg);
+        }
+
+        .pricing-cards {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 60px;
+        }
+
+        .pricing-card {
+            background-color: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(126, 58, 237, 0.1);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            width: 100%;
+            max-width: 350px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card.popular::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: 20px;
+            right: -50px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 8px 60px;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(126, 58, 237, 0.2);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--accent);
+            box-shadow: 0 10px 40px rgba(126, 58, 237, 0.3);
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--text), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .pricing-duration {
+            color: var(--text-dim);
+        }
+
+        .pricing-features {
+            margin-bottom: 2rem;
+        }
+
+        .pricing-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-feature svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--accent);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .testimonials::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(126, 58, 237, 0.05) 0%, rgba(10, 10, 13, 0) 70%);
+            z-index: -1;
+        }
+
+        .testimonial-container {
+            max-width: 900px;
+            margin: 60px auto 0;
+        }
+
+        .testimonial-card {
+            background-color: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(126, 58, 237, 0.1);
+            border-radius: 16px;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .testimonial-text {
+            font-size: 1.3rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .testimonial-text::before, .testimonial-text::after {
+            content: '"';
+            font-size: 3rem;
+            color: var(--accent);
+            position: absolute;
+            opacity: 0.3;
+        }
+
+        .testimonial-text::before {
+            top: -20px;
+            left: -10px;
+        }
+
+        .testimonial-text::after {
+            bottom: -40px;
+            right: -10px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            border: 3px solid var(--accent);
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .author-title {
+            color: var(--text-dim);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            background-color: var(--darker-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 140%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(126, 58, 237, 0.1) 0%, rgba(10, 10, 13, 0) 70%);
+            z-index: 0;
+        }
+
+        .cta-box {
+            background: linear-gradient(to right, rgba(126, 58, 237, 0.1), rgba(60, 126, 250, 0.1));
+            border: 1px solid rgba(126, 58, 237, 0.3);
+            border-radius: 24px;
+            padding: 4rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-description {
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .cta-secondary {
+            background-color: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-secondary:hover {
+            background-color: rgba(126, 58, 237, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--darker-bg);
+            padding: 80px 0 30px;
+            border-top: 1px solid rgba(126, 58, 237, 0.1);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .footer-description {
+            color: var(--text-dim);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(126, 58, 237, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .social-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text);
+        }
+
+        .footer-links h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .footer-links h4::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            bottom: -10px;
+            left: 0;
+            border-radius: 2px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--text-dim);
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-light);
+            transform: translateX(5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(126, 58, 237, 0.1);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-content, .workflow-content {
+                flex-direction: column;
+                gap: 3rem;
+            }
+
+            .pricing-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">conse<span>qence</span></a>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#workflow">Workflow</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#testimonials">Testimonials</a>
+                </div>
+                <button class="cta-button">Download</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="space-background">
+            <div id="stars-container"></div>
+            <div class="nebula nebula-1"></div>
+            <div class="nebula nebula-2"></div>
+            <div class="nebula nebula-3"></div>
+            <div class="shooting-star shooting-star-1"></div>
+            <div class="shooting-star shooting-star-2"></div>
+        </div>
+        <script>
+            // Generate random stars
+            document.addEventListener('DOMContentLoaded', function() {
+                const starsContainer = document.getElementById('stars-container');
+                const starCount = 100;
+                
+                for (let i = 0; i < starCount; i++) {
+                    const star = document.createElement('div');
+                    star.classList.add('star');
+                    
+                    // Random size between 1-3px
+                    const size = Math.random() * 2 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    
+                    // Random position
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    
+                    // Random animation delay
+                    star.style.animationDelay = `${Math.random() * 4}s`;
+                    
+                    starsContainer.appendChild(star);
+                }
+            });
+        </script>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">AI-Powered Music Production</h1>
+                    <p class="hero-subtitle">
+                        Revolutionary plugin for Logic Pro & FL Studio that connects your DAW to a browser-based AI workstation. Transform your production workflow with intelligent audio processing and creative assistance.
+                    </p>
+                    <button class="cta-button">Start Creating Now</button>
+                </div>
+                <div class="hero-img">
+                    <img src="/api/placeholder/640/360" alt="Conseqence Music Production Software Interface">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1a7 7 0 0 1 14 0v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/></svg>
+                    </div>
+                    <h3 class="feature-title">DAW Integration</h3>
+                    <p class="feature-description">
+                        Seamlessly connects to Logic Pro and FL Studio, capturing your audio output and routing it to our AI-powered web browser workstation.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-10 8H4c-.55 0-1-.45-1-1s.45-1 1-1h7c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H4c-.55 0-1-.45-1-1s.45-1 1-1h7c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
+                    </div>
+                    <h3 class="feature-title">AI Track Analysis</h3>
+                    <p class="feature-description">
+                        Intelligent algorithms analyze your tracks in real-time, providing suggestions for mixing, arrangement, and sound design based on genre and style.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                    </div>
+                    <h3 class="feature-title">Web Browser Workspace</h3>
+                    <p class="feature-description">
+                        Access your projects from any device through our powerful browser-based interface that synchronizes with your DAW sessions.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 6V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-4zm-6-2h4v2h-4V4zM9 17.07V9.83c0-.38.4-.62.74-.44l6.03 3.21c.33.18.33.66 0 .83l-6.03 3.21c-.34.19-.74-.05-.74-.44z"/></svg>
+                    </div>
+                    <h3 class="feature-title">AI-Generated Elements</h3>
+                    <p class="feature-description">
+                        Create complementary melodies, drum patterns, basslines, and chord progressions with context-aware AI that understands your composition style.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                    </div>
+                    <h3 class="feature-title">Real-time Feedback</h3>
+                    <p class="feature-description">
+                        Receive instant suggestions for improving your mix, with intelligent EQ, compression, and spatial adjustments tailored to your specific track.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zM3 12c0-2.61 1.67-4.83 4-5.65V4.26C3.55 5.15 1 8.27 1 12s2.55 6.85 6 7.74v-2.09c-2.33-.82-4-3.04-4-5.65z"/></svg>
+                    </div>
+                    <h3 class="feature-title">Cross-Platform Compatibility</h3>
+                    <p class="feature-description">
+                        Works seamlessly on Windows and macOS, supporting both Logic Pro and FL Studio with plans to expand to other DAWs in the future.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="workflow" id="workflow">
+        <div class="container workflow-container">
+            <h2 class="section-title">Intuitive Workflow</h2>
+            <div class="workflow-tabs">
+                <div class="workflow-tab active">Record</div>
+                <div class="workflow-tab">Edit</div>
+                <div class="workflow-tab">Mix</div>
+                <div class="workflow-tab">Master</div>
+            </div>
+            <div class="workflow-content">
+                <div class="workflow-text">
+                    <h3 class="workflow-title">DAW to Browser Workflow</h3>
+                    <p class="workflow-description">
+                        Our plugin creates a seamless bridge between your DAW and our cloud-based AI workstation, enhancing your creativity and productivity.
+                    </p>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Install & Connect</h4>
+                                <p>Load the Conseqence plugin in Logic Pro or FL Studio and connect to our secure audio routing system.</p>
+                            </div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Create in Your DAW</h4>
+                                <p>Work in your familiar environment while Conseqence analyzes your audio output in real-time.</p>
+                            </div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Enhance with AI</h4>
+                                <p>Access the browser workstation to receive AI suggestions, generate complementary elements, and refine your mix.</p>
+                            </div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Implement Changes</h4>
+                                <p>Apply AI-generated elements directly to your DAW project with one-click MIDI and audio export.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="workflow-img">
+                    <img src="/api/placeholder/540/360" alt="Conseqence Recording Interface">
+                </div>
+            </div>
+                
