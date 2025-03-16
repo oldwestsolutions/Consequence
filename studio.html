@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio | Conseqence</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/webmidi@3.0.0/dist/iife/webmidi.iife.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reaper.js/1.0.0/reaper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -32,14 +38,205 @@
             min-height: 100vh;
         }
 
-        /* Grid Layout */
+        /* Updated layout styles */
         .studio-container {
             display: grid;
-            grid-template-columns: 1fr 2fr 1fr;  /* Changed to 3 columns with middle being larger */
-            grid-template-rows: auto 1fr 1fr;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-rows: auto 1fr;
             gap: 20px;
             padding: 20px;
             height: 100vh;
+        }
+
+        .main-sequencer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sequencer-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .sequencer-controls {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .timeline-header {
+            height: 30px;
+            position: relative;
+            background: var(--darker-bg);
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .timeline-ruler {
+            position: absolute;
+            left: 200px;
+            right: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .track-container {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .track {
+            display: flex;
+            height: 100px;
+            margin-bottom: 2px;
+            position: relative;
+        }
+
+        .track-header {
+            width: 200px;
+            background: var(--panel-bg);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            border-right: 1px solid var(--panel-border);
+        }
+
+        .track-content {
+            flex: 1;
+            position: relative;
+            background: var(--darker-bg);
+        }
+
+        .track-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .track-title {
+            font-size: 0.9em;
+            color: var(--text);
+        }
+
+        .track-type-drum {
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .track-type-midi {
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .track-type-synth {
+            border-left: 4px solid #a78bfa;
+        }
+
+        .track-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: 100px 100%;
+            background-image: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0.05) 1px,
+                transparent 1px
+            );
+        }
+
+        .track-content-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .volume-slider {
+            width: 80px;
+        }
+
+        .pan-slider {
+            width: 60px;
+        }
+
+        .audio-clip {
+            position: absolute;
+            height: 80%;
+            top: 10%;
+            background: rgba(126, 58, 237, 0.3);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            cursor: move;
+        }
+
+        .midi-note {
+            position: absolute;
+            height: 16px;
+            background: var(--accent-light);
+            border-radius: 2px;
+            cursor: move;
+        }
+
+        .sample-drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            background: rgba(126, 58, 237, 0.2);
+            pointer-events: none;
+        }
+
+        .track.drag-over .sample-drop-zone {
+            display: block;
+        }
+
+        .piano-panel {
+            flex: 1;
+            min-height: 200px;
+        }
+
+        .video-collaboration-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-container {
+            flex: 1;
+            min-height: 300px;
+            background: var(--panel-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .visualizer-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #visualizer-canvas {
+            flex: 1;
+            width: 100%;
+            background: var(--darker-bg);
+            border-radius: 8px;
         }
 
         /* Left column panels */
@@ -189,6 +386,141 @@
         .control-btn:hover {
             opacity: 0.9;
         }
+
+        .collaboration-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .collaboration-controls input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 4px;
+            background: var(--darker-bg);
+            border: 1px solid var(--panel-border);
+            color: var(--text);
+        }
+
+        .beat-machine-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+        }
+
+        .track-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .track-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(126, 58, 237, 0.05);
+            border-radius: 8px;
+        }
+
+        .track-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .track-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 1px solid var(--panel-border);
+            background: var(--panel-bg);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .track-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .track-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .record-btn.recording {
+            background: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        .track-meter {
+            width: 20px;
+            height: 100px;
+            background: var(--panel-bg);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-indicator {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--accent);
+            transition: height 0.1s;
+        }
+
+        .add-track-btn {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .track-waveform {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .audio-clip {
+            position: absolute;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 4px;
+            cursor: move;
+            overflow: hidden;
+        }
+
+        .audio-clip canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .track.active {
+            border: 2px solid var(--accent-light);
+        }
+        
+        .track-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .pad:hover {
+            background: rgba(126, 58, 237, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -209,20 +541,53 @@
 
         <!-- Left Column -->
         <div class="left-panels">
-            <!-- Mixer Panel -->
-            <div class="panel mixer-panel">
-                <h2 class="panel-header">Mixer</h2>
-                <div class="mixer-channels">
-                    <div class="mixer-channel">
-                        <span>Master</span>
-                        <input type="range" class="fader" orient="vertical">
-                        <div class="knob" data-param="pan"></div>
+            <!-- Beat Machine Panel (formerly Mixer) -->
+            <div class="panel beat-machine-panel">
+                <h2 class="panel-header">Beat Machine</h2>
+                <div class="track-list">
+                    <!-- Track Template -->
+                    <div class="track-row">
+                        <div class="track-controls">
+                            <button class="track-btn record-btn" data-track="1">⏺</button>
+                            <button class="track-btn mute-btn" data-track="1">M</button>
+                            <button class="track-btn solo-btn" data-track="1">S</button>
+                        </div>
+                        <div class="beat-machine" id="beat-pads-1"></div>
+                        <div class="track-meter">
+                            <div class="level-indicator"></div>
+                        </div>
                     </div>
-                    <!-- Add more mixer channels as needed -->
+                    <!-- Add Track Button -->
+                    <button class="control-btn add-track-btn" onclick="addNewTrack()">+ Add Track</button>
                 </div>
             </div>
 
-            <!-- Piano Roll Panel -->
+            <!-- Replace Piano Roll with Visualizer -->
+            <div class="panel visualizer-panel">
+                <h2 class="panel-header">Audio Visualizer</h2>
+                <canvas id="visualizer-canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Main Sequencer (Center) -->
+        <div class="main-sequencer">
+            <!-- Main Sequencer Panel -->
+            <div class="panel sequencer-panel">
+                <h2 class="panel-header">Main Sequencer</h2>
+                <div class="sequencer-controls">
+                    <button class="control-btn" onclick="addTrack('drum')">+ Drum Track</button>
+                    <button class="control-btn" onclick="addTrack('midi')">+ MIDI Track</button>
+                    <button class="control-btn" onclick="addTrack('synth')">+ Synth Track</button>
+                </div>
+                <div class="timeline-header">
+                    <div class="timeline-ruler"></div>
+                </div>
+                <div class="track-container" id="track-container">
+                    <!-- Tracks will be added here dynamically -->
+                </div>
+            </div>
+            
+            <!-- Piano Roll moved under main sequencer -->
             <div class="panel piano-panel">
                 <h2 class="panel-header">Piano Roll</h2>
                 <div class="piano-roll">
@@ -232,47 +597,19 @@
             </div>
         </div>
 
-        <!-- Main Sequencer (Center) -->
-        <div class="panel main-sequencer">
-            <h2 class="panel-header">Main Sequencer</h2>
-            <div class="track-layout">
-                <div class="visualizer" id="main-visualizer"></div>
-                <!-- Tracks will be added here -->
-            </div>
-        </div>
-
         <!-- Right Column -->
         <div class="right-panels">
-            <!-- Beat Machine -->
-            <div class="panel">
-                <h2 class="panel-header">Beat Machine</h2>
-                <div class="beat-machine" id="beat-pads"></div>
-            </div>
-
-            <!-- Effects Rack -->
-            <div class="panel">
-                <h2 class="panel-header">Effects</h2>
-                <div class="effects-rack">
-                    <div class="effect-module">
-                        <h3>Reverb</h3>
-                        <input type="range" oninput="updateReverb(this.value)">
-                    </div>
-                    <div class="effect-module">
-                        <h3>Delay</h3>
-                        <input type="range" oninput="updateDelay(this.value)">
-                    </div>
-                    <div class="effect-module">
-                        <h3>Filter</h3>
-                        <input type="range" oninput="updateFilter(this.value)">
-                    </div>
-                    <div class="effect-module">
-                        <h3>Distortion</h3>
-                        <input type="range" oninput="updateDistortion(this.value)">
-                    </div>
+            <!-- Replace Effects with Video Collaboration -->
+            <div class="panel video-collaboration-panel">
+                <h2 class="panel-header">Live Collaboration</h2>
+                <div id="collaboration-container"></div>
+                <div class="collaboration-controls">
+                    <input type="text" id="peer-id" placeholder="Enter peer ID to connect">
+                    <button class="control-btn" onclick="connectToPeer()">Connect</button>
                 </div>
             </div>
 
-            <!-- Sample Browser -->
+            <!-- Rest of right panels remain unchanged -->
             <div class="panel">
                 <h2 class="panel-header">Sample Browser</h2>
                 <div class="sample-list">
@@ -280,7 +617,6 @@
                 </div>
             </div>
 
-            <!-- MIDI Controller -->
             <div class="panel">
                 <h2 class="panel-header">MIDI Controller</h2>
                 <div class="midi-pads">
@@ -303,56 +639,312 @@
             baseUrl: "samples/"
         }).toDestination();
 
-        // Initialize Tone.js
-        async function startAudio() {
-            await Tone.start();
-            console.log('Audio is ready');
+        // Add this near the top of your script section, after the existing variable declarations
+        let audioContext;
+        let mainMixer;
+        let activeTrack = null;
+        let transportTime = 0;
+        let isRecording = false;
+
+        // Initialize audio system
+        async function initializeAudio() {
+            try {
+                await Tone.start();
+                audioContext = Tone.context;
+                console.log('Audio context started:', audioContext.state);
+                
+                // Create main mixer
+                mainMixer = new Tone.Gain().toDestination();
+                
+                // Set up audio settings
+                Tone.Transport.bpm.value = 120;
+                Tone.Transport.timeSignature = [4, 4];
+                
+                // Initialize audio meters
+                setupAudioMeters();
+                
+                return true;
+            } catch (error) {
+                console.error('Failed to initialize audio:', error);
+                return false;
+            }
         }
 
-        // Transport controls
+        // Update the existing startAudio function
+        async function startAudio() {
+            const success = await initializeAudio();
+            
+            if (success) {
+                await initializeMIDI();
+                const startButton = document.querySelector('button[onclick="startAudio()"]');
+                startButton.textContent = 'Audio Ready';
+                startButton.disabled = true;
+                
+                document.querySelectorAll('.transport-controls button:not([onclick="startAudio()"])')
+                    .forEach(btn => btn.disabled = false);
+                    
+                // Initialize first track
+                addNewTrack();
+            } else {
+                alert('Failed to start audio system. Please check your browser permissions.');
+            }
+        }
+
+        // Add audio metering
+        function setupAudioMeters() {
+            const meter = new Tone.Meter();
+            mainMixer.connect(meter);
+            
+            // Update meters every 100ms
+            setInterval(() => {
+                const level = meter.getValue();
+                updateMeterVisuals(level);
+            }, 100);
+        }
+
+        function updateMeterVisuals(level) {
+            // Convert level to percentage (assuming level is in dB)
+            const normalizedLevel = Math.max(0, Math.min(100, (level + 60) * (100/60)));
+            
+            // Update all level indicators
+            document.querySelectorAll('.level-indicator').forEach(indicator => {
+                indicator.style.height = `${normalizedLevel}%`;
+            });
+        }
+
+        // Update the existing toggleTransport function
         function toggleTransport() {
-            if (isPlaying) {
+            if (Tone.Transport.state === 'started') {
                 Tone.Transport.stop();
+                document.querySelector('button[onclick="toggleTransport()"]').textContent = 'Play';
                 isPlaying = false;
             } else {
                 Tone.Transport.start();
+                document.querySelector('button[onclick="toggleTransport()"]').textContent = 'Stop';
                 isPlaying = true;
+                
+                // Start transport time counter
+                setInterval(() => {
+                    if (isPlaying) {
+                        transportTime += 0.1;
+                        updateTransportDisplay();
+                    }
+                }, 100);
             }
         }
 
-        function resetTransport() {
-            Tone.Transport.position = 0;
-        }
-
+        // Update the existing changeTempo function
         function changeTempo(value) {
-            Tone.Transport.bpm.value = value;
+            Tone.Transport.bpm.value = parseInt(value);
             document.getElementById('tempo-display').textContent = `${value} BPM`;
         }
 
-        // Beat Machine
-        const beatPads = document.getElementById('beat-pads');
-        const sequence = Array(16).fill(false);
+        // Track management
+        let tracks = [];
+        let recordingTrack = null;
 
-        for (let i = 0; i < 16; i++) {
-            const pad = document.createElement('div');
-            pad.className = 'pad';
-            pad.onclick = () => togglePad(i, pad);
-            beatPads.appendChild(pad);
-        }
+        class Track {
+            constructor(type, id) {
+                this.type = type;
+                this.id = id;
+                this.volume = new Tone.Volume(0);
+                this.panner = new Tone.Panner(0);
+                this.muted = false;
+                this.soloed = false;
+                this.clips = [];
+                
+                // Connect audio nodes
+                this.volume.connect(this.panner);
+                this.panner.connect(Tone.Destination);
 
-        function togglePad(index, pad) {
-            sequence[index] = !sequence[index];
-            pad.classList.toggle('active');
-        }
-
-        // Create beat sequence
-        const beatSeq = new Tone.Sequence((time, index) => {
-            if (sequence[index]) {
-                sampler.triggerAttackRelease('C4', '8n', time);
+                if (type === 'synth') {
+                    this.instrument = new Tone.PolySynth().connect(this.volume);
+                } else if (type === 'drum') {
+                    this.sampler = new Tone.Sampler({
+                        urls: {
+                            C4: "kick.wav",
+                            D4: "snare.wav",
+                            E4: "hihat.wav",
+                        }
+                    }).connect(this.volume);
+                }
             }
-        }, [...Array(16).keys()], '16n');
 
-        beatSeq.start(0);
+            createDOMElement() {
+                const trackEl = document.createElement('div');
+                trackEl.className = `track track-type-${this.type}`;
+                trackEl.dataset.trackId = this.id;
+
+                trackEl.innerHTML = `
+                    <div class="track-header">
+                        <div class="track-title">Track ${this.id}</div>
+                        <div class="track-controls">
+                            <button class="track-btn mute-btn">M</button>
+                            <button class="track-btn solo-btn">S</button>
+                            <input type="range" class="volume-slider" min="-60" max="0" value="0">
+                            <input type="range" class="pan-slider" min="-1" max="1" step="0.1" value="0">
+                            <button class="track-btn delete-btn">×</button>
+                        </div>
+                    </div>
+                    <div class="track-content">
+                        <div class="track-grid"></div>
+                        <div class="track-content-overlay"></div>
+                        <div class="sample-drop-zone"></div>
+                    </div>
+                `;
+
+                this.setupEventListeners(trackEl);
+                return trackEl;
+            }
+
+            setupEventListeners(trackEl) {
+                const volumeSlider = trackEl.querySelector('.volume-slider');
+                const panSlider = trackEl.querySelector('.pan-slider');
+                const muteBtn = trackEl.querySelector('.mute-btn');
+                const soloBtn = trackEl.querySelector('.solo-btn');
+                const deleteBtn = trackEl.querySelector('.delete-btn');
+                const content = trackEl.querySelector('.track-content');
+
+                volumeSlider.addEventListener('input', (e) => {
+                    this.volume.volume.value = parseFloat(e.target.value);
+                });
+
+                panSlider.addEventListener('input', (e) => {
+                    this.panner.pan.value = parseFloat(e.target.value);
+                });
+
+                muteBtn.addEventListener('click', () => {
+                    this.muted = !this.muted;
+                    this.volume.mute = this.muted;
+                    muteBtn.classList.toggle('active');
+                });
+
+                soloBtn.addEventListener('click', () => {
+                    this.soloed = !this.soloed;
+                    soloBtn.classList.toggle('active');
+                    updateSoloState();
+                });
+
+                deleteBtn.addEventListener('click', () => {
+                    this.delete();
+                });
+
+                if (this.type === 'drum') {
+                    content.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        trackEl.classList.add('drag-over');
+                    });
+
+                    content.addEventListener('dragleave', () => {
+                        trackEl.classList.remove('drag-over');
+                    });
+
+                    content.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        trackEl.classList.remove('drag-over');
+                        this.handleSampleDrop(e);
+                    });
+                }
+
+                if (this.type === 'midi' || this.type === 'synth') {
+                    content.addEventListener('click', (e) => {
+                        const rect = content.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        this.createMidiNote(x, y);
+                    });
+                }
+            }
+
+            handleSampleDrop(e) {
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('audio/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const buffer = event.target.result;
+                        this.addSample(buffer, e.offsetX);
+                    };
+                    reader.readAsArrayBuffer(file);
+                }
+            }
+
+            createMidiNote(x, y) {
+                const note = document.createElement('div');
+                note.className = 'midi-note';
+                note.style.left = `${x}px`;
+                note.style.top = `${y}px`;
+                note.style.width = '100px';
+                
+                this.setupNoteDragging(note);
+                this.trackEl.querySelector('.track-content-overlay').appendChild(note);
+            }
+
+            setupNoteDragging(noteEl) {
+                let isDragging = false;
+                let startX, startLeft;
+
+                noteEl.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.clientX;
+                    startLeft = parseFloat(noteEl.style.left);
+                    noteEl.style.zIndex = '1000';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    const dx = e.clientX - startX;
+                    noteEl.style.left = `${startLeft + dx}px`;
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    noteEl.style.zIndex = '';
+                });
+            }
+
+            delete() {
+                this.volume.dispose();
+                this.panner.dispose();
+                if (this.instrument) this.instrument.dispose();
+                if (this.sampler) this.sampler.dispose();
+                this.trackEl.remove();
+                tracks = tracks.filter(t => t !== this);
+                updateSoloState();
+            }
+        }
+
+        let nextTrackId = 1;
+
+        function addTrack(type) {
+            const track = new EnhancedTrack(type, nextTrackId++);
+            tracks.push(track);
+            const trackEl = track.createDOMElement();
+            document.getElementById('track-container').appendChild(trackEl);
+        }
+
+        function updateSoloState() {
+            const soloedTracks = tracks.filter(t => t.soloed);
+            tracks.forEach(track => {
+                track.volume.mute = soloedTracks.length > 0 ? 
+                    (!track.soloed || track.muted) : track.muted;
+            });
+        }
+
+        // Initialize timeline ruler
+        function initializeTimeline() {
+            const ruler = document.querySelector('.timeline-ruler');
+            for (let i = 0; i < 64; i++) {
+                const marker = document.createElement('div');
+                marker.className = 'timeline-marker';
+                marker.textContent = i + 1;
+                ruler.appendChild(marker);
+            }
+        }
+
+        // Initialize the sequencer
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTimeline();
+        });
 
         // Piano Roll
         const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -446,6 +1038,971 @@
         // Initialize
         checkLogin();
         Tone.Transport.bpm.value = 120;
+
+        // Initialize peer connection
+        const peer = new Peer();
+        let connections = [];
+
+        // WebMidi setup
+        WebMidi.enable()
+            .then(() => {
+                console.log("WebMidi enabled!");
+                setupMidiInputs();
+            })
+            .catch(err => console.log("WebMidi could not be enabled.", err));
+
+        // React Components
+        const VideoCollaboration = () => {
+            const [streams, setStreams] = React.useState(new Map());
+            const [localStream, setLocalStream] = React.useState(null);
+
+            React.useEffect(() => {
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                    .then(stream => {
+                        setLocalStream(stream);
+                        // Share stream with existing peers
+                        connections.forEach(conn => {
+                            const call = peer.call(conn.peer, stream);
+                            call.on('stream', remoteStream => {
+                                setStreams(prev => new Map(prev).set(conn.peer, remoteStream));
+                            });
+                        });
+
+                // Handle incoming calls
+                peer.on('call', call => {
+                    call.answer(localStream);
+                    call.on('stream', remoteStream => {
+                        setStreams(prev => new Map(prev).set(call.peer, remoteStream));
+                    });
+                });
+
+                return () => {
+                    localStream?.getTracks().forEach(track => track.stop());
+                };
+            }, []);
+
+            return (
+                <div className="video-container">
+                    {localStream && (
+                        <video autoPlay muted ref={video => {
+                            if (video) video.srcObject = localStream;
+                        }} />
+                    )}
+                    {Array.from(streams.values()).map((stream, i) => (
+                        <video key={i} autoPlay ref={video => {
+                            if (video) video.srcObject = stream;
+                        }} />
+                    ))}
+                </div>
+            );
+        };
+
+        // Enhanced drum machine with MIDI support
+        class DrumMachine extends Tone.Instrument {
+            constructor() {
+                super();
+                this.samples = new Tone.ToneAudioBuffers({
+                    kick: "samples/kick.wav",
+                    snare: "samples/snare.wav",
+                    hihat: "samples/hihat.wav",
+                    clap: "samples/clap.wav"
+                });
+                
+                this.patterns = Array(16).fill().map(() => Array(4).fill(false));
+            }
+
+            triggerSample(name, time) {
+                const player = new Tone.Player(this.samples.get(name)).toDestination();
+                player.start(time);
+            }
+        }
+
+        // Master track modal with WebMidi integration
+        function setupMidiInputs() {
+            WebMidi.inputs.forEach(input => {
+                input.addListener("noteon", e => {
+                    const note = e.note.name + e.note.octave;
+                    synth.triggerAttackRelease(note, "8n");
+                    // Broadcast MIDI event to peers
+                    connections.forEach(conn => {
+                        conn.send({ type: 'midi', note, action: 'noteon' });
+                    });
+                });
+            });
+        }
+
+        // Peer connection handlers
+        peer.on('open', (id) => {
+            console.log('My peer ID is: ' + id);
+        });
+
+        peer.on('connection', (conn) => {
+            connections.push(conn);
+            conn.on('data', (data) => {
+                // Handle incoming collaboration data
+                if (data.type === 'midi') {
+                    handleRemoteMidiEvent(data);
+                } else if (data.type === 'pattern') {
+                    updateSequencePattern(data.pattern);
+                }
+            });
+        });
+
+        function handleRemoteMidiEvent(data) {
+            if (data.action === 'noteon') {
+                synth.triggerAttackRelease(data.note, "8n");
+            }
+        }
+
+        function updateSequencePattern(pattern) {
+            tracks.forEach((track, index) => {
+                track.sequence.forEach((step, stepIndex) => {
+                    track.sequence[stepIndex] = pattern[stepIndex];
+                    const pad = document.querySelector(`.pad[data-track="${index + 1}"]`);
+                    pad.classList.toggle('active', pattern[stepIndex]);
+                });
+            });
+        }
+
+        // Audio Visualizer Setup
+        const visualizer = {
+            canvas: document.getElementById('visualizer-canvas'),
+            ctx: null,
+            analyser: null,
+            dataArray: null,
+
+            init() {
+                this.ctx = this.canvas.getContext('2d');
+                this.analyser = new Tone.Analyser('waveform', 256);
+                Tone.Destination.connect(this.analyser);
+                this.dataArray = new Float32Array(this.analyser.size);
+                this.draw();
+            },
+
+            draw() {
+                const { ctx, canvas, analyser, dataArray } = this;
+                
+                // Ensure canvas size matches container
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Get waveform data
+                analyser.getValue(dataArray);
+                
+                // Draw waveform
+                ctx.beginPath();
+                ctx.strokeStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--accent').trim();
+                ctx.lineWidth = 2;
+                
+                const sliceWidth = canvas.width / dataArray.length;
+                let x = 0;
+                
+                ctx.moveTo(x, canvas.height / 2);
+                
+                dataArray.forEach((value) => {
+                    const y = (value + 1) / 2 * canvas.height;
+                    ctx.lineTo(x, y);
+                    x += sliceWidth;
+                });
+                
+                ctx.stroke();
+                requestAnimationFrame(() => this.draw());
+            }
+        };
+
+        // Mount React components
+        ReactDOM.render(
+            <VideoCollaboration />,
+            document.getElementById('collaboration-container')
+        );
+
+        // Add these audio processing classes and functions
+        class AudioTrack extends Track {
+            constructor(type, id) {
+                super(type, id);
+                this.recorder = new Tone.Recorder();
+                this.meter = new Tone.Meter();
+                this.isRecording = false;
+                this.recordedChunks = [];
+                
+                // Connect audio chain
+                this.volume.connect(this.meter);
+                this.volume.connect(this.recorder);
+            }
+
+            async startRecording() {
+                if (this.isRecording) return;
+                
+                this.isRecording = true;
+                this.recordedChunks = [];
+                await this.recorder.start();
+                
+                // Update UI
+                this.trackEl.querySelector('.record-btn').classList.add('recording');
+            }
+
+            async stopRecording() {
+                if (!this.isRecording) return;
+                
+                const recording = await this.recorder.stop();
+                this.isRecording = false;
+                
+                // Create audio clip from recording
+                const clip = await this.createClipFromRecording(recording);
+                this.clips.push(clip);
+                
+                // Update UI
+                this.trackEl.querySelector('.record-btn').classList.remove('recording');
+                this.renderClips();
+            }
+
+            async createClipFromRecording(blob) {
+                const buffer = await Tone.Buffer.fromUrl(URL.createObjectURL(blob));
+                return {
+                    buffer,
+                    startTime: Tone.Transport.position,
+                    duration: buffer.duration
+                };
+            }
+
+            renderClips() {
+                const overlay = this.trackEl.querySelector('.track-content-overlay');
+                overlay.innerHTML = '';
+                
+                this.clips.forEach(clip => {
+                    const clipEl = document.createElement('div');
+                    clipEl.className = 'audio-clip';
+                    clipEl.style.left = `${this.timeToPixels(clip.startTime)}px`;
+                    clipEl.style.width = `${this.timeToPixels(clip.duration)}px`;
+                    
+                    // Add waveform visualization
+                    const canvas = document.createElement('canvas');
+                    this.drawWaveform(canvas, clip.buffer);
+                    clipEl.appendChild(canvas);
+                    
+                    overlay.appendChild(clipEl);
+                });
+            }
+
+            timeToPixels(time) {
+                // Convert time to pixels based on zoom level
+                return time * 100; // Adjust multiplier based on zoom
+            }
+
+            drawWaveform(canvas, buffer) {
+                const ctx = canvas.getContext('2d');
+                const data = buffer.getChannelData(0);
+                const step = Math.ceil(data.length / canvas.width);
+                const amp = canvas.height / 2;
+
+                ctx.beginPath();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                
+                const sliceWidth = canvas.width / data.length;
+                let x = 0;
+                
+                ctx.moveTo(x, amp);
+                
+                for (let i = 0; i < canvas.width; i++) {
+                    let min = 1.0;
+                    let max = -1.0;
+                    
+                    for (let j = 0; j < step; j++) {
+                        const datum = data[(i * step) + j];
+                        if (datum < min) min = datum;
+                        if (datum > max) max = datum;
+                    }
+                    
+                    ctx.lineTo(x, (1 + min) * amp);
+                    ctx.lineTo(x, (1 + max) * amp);
+                    x += sliceWidth;
+                }
+                
+                ctx.stroke();
+            }
+        }
+
+        // DAW Integration
+        class DAWBridge {
+            constructor() {
+                this.midiInputs = new Map();
+                this.midiOutputs = new Map();
+                this.audioInputs = new Map();
+                this.setupWebMidi();
+            }
+
+            async setupWebMidi() {
+                try {
+                    await WebMidi.enable();
+                    
+                    // Setup MIDI inputs
+                    WebMidi.inputs.forEach(input => {
+                        this.midiInputs.set(input.id, input);
+                        this.setupMidiInput(input);
+                    });
+
+                    // Setup MIDI outputs
+                    WebMidi.outputs.forEach(output => {
+                        this.midiOutputs.set(output.id, output);
+                    });
+
+                    // Setup audio inputs
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    devices
+                        .filter(device => device.kind === 'audioinput')
+                        .forEach(device => {
+                            this.audioInputs.set(device.deviceId, device);
+                        });
+
+                } catch (err) {
+                    console.error("WebMidi could not be enabled:", err);
+                }
+            }
+
+            setupMidiInput(input) {
+                input.addListener('noteon', e => {
+                    const track = tracks.find(t => t.type === 'midi' && t.midiInput === input.id);
+                    if (track) {
+                        track.instrument.triggerAttack(e.note.name + e.note.octave, 
+                            Tone.now(), 
+                            e.velocity);
+                    }
+                });
+
+                input.addListener('noteoff', e => {
+                    const track = tracks.find(t => t.type === 'midi' && t.midiInput === input.id);
+                    if (track) {
+                        track.instrument.triggerRelease(e.note.name + e.note.octave);
+                    }
+                });
+            }
+
+            async connectAudioInput(deviceId, track) {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        deviceId: { exact: deviceId },
+                        echoCancellation: false,
+                        autoGainControl: false,
+                        noiseSuppression: false
+                    }
+                });
+
+                const source = new Tone.UserMedia().connect(track.volume);
+                await source.open(deviceId);
+                return source;
+            }
+        }
+
+        // Enhance Track class with DAW integration
+        class EnhancedTrack extends AudioTrack {
+            constructor(type, id) {
+                super(type, id);
+                this.midiInput = null;
+                this.audioInput = null;
+                this.dawBridge = new DAWBridge();
+            }
+
+            createDOMElement() {
+                const el = super.createDOMElement();
+                
+                // Add input selection controls
+                const controls = el.querySelector('.track-controls');
+                controls.insertAdjacentHTML('beforeend', `
+                    <select class="midi-input-select">
+                        <option value="">Select MIDI Input</option>
+                        ${Array.from(this.dawBridge.midiInputs.values())
+                            .map(input => `<option value="${input.id}">${input.name}</option>`)
+                            .join('')}
+                    </select>
+                    <select class="audio-input-select">
+                        <option value="">Select Audio Input</option>
+                        ${Array.from(this.dawBridge.audioInputs.values())
+                            .map(input => `<option value="${input.deviceId}">${input.label}</option>`)
+                            .join('')}
+                    </select>
+                    <button class="track-btn record-btn">⏺</button>
+                `);
+
+                // Setup input handlers
+                el.querySelector('.midi-input-select').addEventListener('change', (e) => {
+                    this.midiInput = e.target.value;
+                });
+
+                el.querySelector('.audio-input-select').addEventListener('change', async (e) => {
+                    const deviceId = e.target.value;
+                    if (deviceId) {
+                        this.audioInput = await this.dawBridge.connectAudioInput(deviceId, this);
+                    }
+                });
+
+                el.querySelector('.record-btn').addEventListener('click', () => {
+                    if (this.isRecording) {
+                        this.stopRecording();
+                    } else {
+                        this.startRecording();
+                    }
+                });
+
+                return el;
+            }
+        }
+
+        // After the EnhancedTrack class definition, add these new classes and functions:
+
+        class SequencerTrack {
+            constructor(type, id) {
+                this.type = type;
+                this.id = id;
+                this.clips = [];
+                this.isPlaying = false;
+                this.currentTime = 0;
+                
+                // Audio processing chain
+                this.input = new Tone.Channel();
+                this.meter = new Tone.Meter();
+                this.recorder = new Tone.Recorder();
+                
+                // Connect audio chain
+                this.input.connect(this.meter);
+                this.input.connect(this.recorder);
+                this.input.toDestination();
+                
+                // Connect to main mixer
+                this.input.connect(mainMixer);
+                
+                // Add effects chain
+                this.effects = {
+                    reverb: new Tone.Reverb({
+                        decay: 1.5,
+                        wet: 0.2
+                    }).connect(this.input),
+                    delay: new Tone.FeedbackDelay({
+                        delayTime: 0.25,
+                        feedback: 0.2,
+                        wet: 0.1
+                    }).connect(this.input)
+                };
+                
+                // Create track container element
+                this.element = this.createTrackElement();
+                this.setupPlayback();
+            }
+
+            createTrackElement() {
+                const trackEl = document.createElement('div');
+                trackEl.className = `track track-type-${this.type}`;
+                trackEl.innerHTML = `
+                    <div class="track-header">
+                        <div class="track-title">Track ${this.id}</div>
+                        <div class="track-controls">
+                            <button class="track-btn record-btn" title="Record">⏺</button>
+                            <button class="track-btn play-btn" title="Play/Stop">▶</button>
+                            <button class="track-btn mute-btn" title="Mute">M</button>
+                            <input type="range" class="volume-slider" min="-60" max="6" value="0" title="Volume">
+                            <select class="input-select">
+                                <option value="">Select Input...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="track-content">
+                        <div class="track-grid"></div>
+                        <div class="track-clips"></div>
+                        <canvas class="track-waveform"></canvas>
+                    </div>
+                `;
+
+                this.setupTrackControls(trackEl);
+                return trackEl;
+            }
+
+            setupTrackControls(trackEl) {
+                const recordBtn = trackEl.querySelector('.record-btn');
+                const playBtn = trackEl.querySelector('.play-btn');
+                const muteBtn = trackEl.querySelector('.mute-btn');
+                const volumeSlider = trackEl.querySelector('.volume-slider');
+                const inputSelect = trackEl.querySelector('.input-select');
+
+                // Record button
+                recordBtn.addEventListener('click', () => {
+                    if (this.isRecording) {
+                        this.stopRecording();
+                        recordBtn.classList.remove('active');
+                    } else {
+                        this.startRecording();
+                        recordBtn.classList.add('active');
+                    }
+                });
+
+                // Play button
+                playBtn.addEventListener('click', () => {
+                    if (this.isPlaying) {
+                        this.stopPlayback();
+                        playBtn.textContent = '▶';
+                    } else {
+                        this.startPlayback();
+                        playBtn.textContent = '⏹';
+                    }
+                });
+
+                // Mute button
+                muteBtn.addEventListener('click', () => {
+                    this.input.mute = !this.input.mute;
+                    muteBtn.classList.toggle('active');
+                });
+
+                // Volume slider
+                volumeSlider.addEventListener('input', (e) => {
+                    this.input.volume.value = parseFloat(e.target.value);
+                });
+
+                // Input selection
+                this.populateInputOptions(inputSelect);
+                inputSelect.addEventListener('change', (e) => {
+                    this.connectInput(e.target.value);
+                });
+            }
+
+            async startRecording() {
+                if (this.isRecording) return;
+                
+                this.isRecording = true;
+                await this.recorder.start();
+                
+                // Start visual feedback
+                this.startWaveformVisualization();
+            }
+
+            async stopRecording() {
+                if (!this.isRecording) return;
+                
+                const recording = await this.recorder.stop();
+                this.isRecording = false;
+                
+                // Create new clip from recording
+                const clip = await this.createClip(recording);
+                this.clips.push(clip);
+                
+                // Update visualization
+                this.renderClips();
+                this.stopWaveformVisualization();
+            }
+
+            async createClip(recordingBlob) {
+                const buffer = await Tone.Buffer.fromUrl(URL.createObjectURL(recordingBlob));
+                return {
+                    buffer,
+                    startTime: this.currentTime,
+                    duration: buffer.duration
+                };
+            }
+
+            setupPlayback() {
+                // Create playback scheduler
+                Tone.Transport.scheduleRepeat((time) => {
+                    this.clips.forEach(clip => {
+                        if (this.currentTime >= clip.startTime && 
+                            this.currentTime < clip.startTime + clip.duration) {
+                            this.playClip(clip, time);
+                        }
+                    });
+                    this.currentTime += 0.1; // Update time every 100ms
+                }, '0.1');
+            }
+
+            playClip(clip, time) {
+                const player = new Tone.Player(clip.buffer).connect(this.input);
+                player.start(time);
+            }
+
+            startPlayback() {
+                this.isPlaying = true;
+                Tone.Transport.start();
+            }
+
+            stopPlayback() {
+                this.isPlaying = false;
+                Tone.Transport.stop();
+                this.currentTime = 0;
+            }
+
+            // Add this method to the SequencerTrack class
+            async connectInput(deviceId) {
+                if (!deviceId) return;
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            deviceId: { exact: deviceId },
+                            echoCancellation: false,
+                            autoGainControl: false,
+                            noiseSuppression: false
+                        }
+                    });
+
+                    const source = new Tone.UserMedia().connect(this.input);
+                    await source.open(deviceId);
+                    console.log('Input connected successfully');
+                } catch (err) {
+                    console.error('Error connecting input:', err);
+                }
+            }
+
+            async populateInputOptions(selectElement) {
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const audioInputs = devices.filter(device => device.kind === 'audioinput');
+                    
+                    audioInputs.forEach(input => {
+                        const option = document.createElement('option');
+                        option.value = input.deviceId;
+                        option.text = input.label || `Audio Input ${selectElement.options.length}`;
+                        selectElement.add(option);
+                    });
+                } catch (err) {
+                    console.error('Error getting audio inputs:', err);
+                }
+            }
+
+            startWaveformVisualization() {
+                const canvas = this.element.querySelector('.track-waveform');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                // Animation frame setup
+                this.visualizationFrame = requestAnimationFrame(() => this.drawWaveform(ctx));
+            }
+
+            stopWaveformVisualization() {
+                if (this.visualizationFrame) {
+                    cancelAnimationFrame(this.visualizationFrame);
+                }
+            }
+
+            drawWaveform(ctx) {
+                const width = ctx.canvas.width;
+                const height = ctx.canvas.height;
+                
+                // Get audio data
+                const values = this.meter.getValue();
+                
+                // Clear previous frame
+                ctx.clearRect(0, 0, width, height);
+                
+                // Draw waveform
+                ctx.beginPath();
+                ctx.strokeStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--accent-light').trim();
+                ctx.lineWidth = 2;
+                
+                const sliceWidth = width / values.length;
+                let x = 0;
+                
+                ctx.moveTo(x, height / 2);
+                
+                for (let i = 0; i < values.length; i++) {
+                    const y = (values[i] + 1) / 2 * height;
+                    ctx.lineTo(x, y);
+                    x += sliceWidth;
+                }
+                
+                ctx.stroke();
+                
+                // Continue animation
+                if (this.isRecording) {
+                    this.visualizationFrame = requestAnimationFrame(() => this.drawWaveform(ctx));
+                }
+            }
+
+            renderClips() {
+                const clipContainer = this.element.querySelector('.track-clips');
+                clipContainer.innerHTML = '';
+                
+                this.clips.forEach((clip, index) => {
+                    const clipElement = document.createElement('div');
+                    clipElement.className = 'audio-clip';
+                    clipElement.style.left = `${clip.startTime * 100}px`; // Scale time to pixels
+                    clipElement.style.width = `${clip.duration * 100}px`; // Scale duration to pixels
+                    
+                    // Add clip waveform visualization
+                    const canvas = document.createElement('canvas');
+                    canvas.width = clipElement.offsetWidth;
+                    canvas.height = 80; // Fixed height for clip visualization
+                    this.drawClipWaveform(canvas, clip.buffer);
+                    
+                    clipElement.appendChild(canvas);
+                    clipContainer.appendChild(clipElement);
+                    
+                    // Make clip draggable
+                    this.makeClipDraggable(clipElement, index);
+                });
+            }
+
+            drawClipWaveform(canvas, buffer) {
+                const ctx = canvas.getContext('2d');
+                const data = buffer.getChannelData(0); // Get first channel data
+                const step = Math.ceil(data.length / canvas.width);
+                const amp = canvas.height / 2;
+
+                ctx.fillStyle = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--accent').trim();
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.beginPath();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+
+                for (let i = 0; i < canvas.width; i++) {
+                    let min = 1.0;
+                    let max = -1.0;
+                    
+                    for (let j = 0; j < step; j++) {
+                        const datum = data[(i * step) + j];
+                        if (datum < min) min = datum;
+                        if (datum > max) max = datum;
+                    }
+                    
+                    ctx.moveTo(i, (1 + min) * amp);
+                    ctx.lineTo(i, (1 + max) * amp);
+                }
+
+                ctx.stroke();
+            }
+
+            makeClipDraggable(clipElement, clipIndex) {
+                let isDragging = false;
+                let startX, startLeft;
+
+                clipElement.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.clientX;
+                    startLeft = parseInt(clipElement.style.left);
+                    clipElement.style.zIndex = '1000';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    
+                    const dx = e.clientX - startX;
+                    const newLeft = Math.max(0, startLeft + dx);
+                    clipElement.style.left = `${newLeft}px`;
+                    
+                    // Update clip start time
+                    this.clips[clipIndex].startTime = newLeft / 100; // Convert pixels back to time
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    clipElement.style.zIndex = '';
+                });
+            }
+
+            // Add method to update effects
+            updateEffects(effect, value) {
+                switch(effect) {
+                    case 'reverb':
+                        this.effects.reverb.wet.value = value;
+                        break;
+                    case 'delay':
+                        this.effects.delay.wet.value = value;
+                        break;
+                }
+            }
+        }
+
+        // Initialize the sequencer
+        function initializeSequencer() {
+            const container = document.getElementById('track-container');
+            const track = new SequencerTrack('audio', 1);
+            container.appendChild(track.element);
+        }
+
+        // Add this to your existing DOMContentLoaded event listener
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... existing initialization code ...
+            initializeSequencer();
+        });
+
+        // Update the transport display
+        function updateTransportDisplay() {
+            const minutes = Math.floor(transportTime / 60);
+            const seconds = Math.floor(transportTime % 60).toString().padStart(2, '0');
+            document.getElementById('transport-time').textContent = `${minutes}:${seconds}`;
+        }
+
+        // Add reset transport function
+        function resetTransport() {
+            transportTime = 0;
+            updateTransportDisplay();
+            Tone.Transport.position = 0;
+            tracks.forEach(track => track.currentTime = 0);
+        }
+
+        // Add new track function
+        function addNewTrack() {
+            const trackId = tracks.length + 1;
+            const track = new SequencerTrack('audio', trackId);
+            tracks.push(track);
+            
+            const container = document.getElementById('track-container');
+            container.appendChild(track.element);
+            
+            // Add beat machine track
+            addBeatMachineTrack(trackId);
+        }
+
+        // Add beat machine track
+        function addBeatMachineTrack(trackId) {
+            const template = document.querySelector('.track-row').cloneNode(true);
+            template.querySelector('.record-btn').dataset.track = trackId;
+            template.querySelector('.mute-btn').dataset.track = trackId;
+            template.querySelector('.solo-btn').dataset.track = trackId;
+            
+            const beatPads = template.querySelector('.beat-machine');
+            beatPads.id = `beat-pads-${trackId}`;
+            createBeatPads(beatPads, trackId);
+            
+            document.querySelector('.track-list').insertBefore(template, 
+                document.querySelector('.add-track-btn'));
+        }
+
+        // Create beat pads
+        function createBeatPads(container, trackId) {
+            for (let i = 0; i < 16; i++) {
+                const pad = document.createElement('div');
+                pad.className = 'pad';
+                pad.dataset.step = i;
+                pad.dataset.track = trackId;
+                pad.addEventListener('click', togglePad);
+                container.appendChild(pad);
+            }
+        }
+
+        // Toggle pad state
+        function togglePad(e) {
+            const pad = e.target;
+            pad.classList.toggle('active');
+            const track = tracks[parseInt(pad.dataset.track) - 1];
+            const step = parseInt(pad.dataset.step);
+            
+            if (pad.classList.contains('active')) {
+                // Schedule sound at this step
+                Tone.Transport.schedule((time) => {
+                    if (track.type === 'drum') {
+                        track.sampler.triggerAttackRelease('C2', '8n', time);
+                    } else {
+                        track.instrument.triggerAttackRelease('C4', '8n', time);
+                    }
+                }, `0:${step}`);
+            }
+        }
+
+        // Add MIDI handling
+        function handleMIDIMessage(message) {
+            if (!activeTrack) return;
+            
+            const [status, note, velocity] = message.data;
+            
+            // Note On
+            if (status === 144 && velocity > 0) {
+                activeTrack.instrument.triggerAttackRelease(
+                    Tone.Frequency(note, "midi").toNote(),
+                    "8n",
+                    undefined,
+                    velocity / 127
+                );
+            }
+            // Note Off
+            else if (status === 128 || (status === 144 && velocity === 0)) {
+                activeTrack.instrument.triggerRelease(
+                    Tone.Frequency(note, "midi").toNote()
+                );
+            }
+        }
+
+        // Initialize WebMidi
+        async function initializeMIDI() {
+            try {
+                await WebMidi.enable();
+                console.log("WebMidi enabled!");
+                
+                WebMidi.inputs.forEach(input => {
+                    input.addListener("midimessage", handleMIDIMessage);
+                });
+            } catch (err) {
+                console.error("Could not enable WebMidi:", err);
+            }
+        }
+
+        // Add track selection
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.track')) {
+                const trackEl = e.target.closest('.track');
+                const trackId = parseInt(trackEl.dataset.trackId);
+                activeTrack = tracks[trackId - 1];
+                
+                // Update UI to show active track
+                document.querySelectorAll('.track').forEach(t => 
+                    t.classList.remove('active'));
+                trackEl.classList.add('active');
+            }
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleTransport();
+            } else if (e.code === 'KeyR' && e.ctrlKey) {
+                e.preventDefault();
+                if (activeTrack) {
+                    activeTrack.startRecording();
+                }
+            }
+        });
+
+        // Initialize studio engine
+        const studio = new StudioEngine();
+
+        // Update track creation to use new engine
+        function addTrack(type) {
+            const track = studio.createTrack(type, {
+                name: `Track ${nextTrackId++}`,
+                color: getTrackColor(type)
+            });
+            
+            const trackEl = createTrackElement(track);
+            document.getElementById('track-container').appendChild(trackEl);
+            return track;
+        }
+
+        // Update transport controls
+        document.querySelector('.play-btn').addEventListener('click', () => {
+            if (studio.isPlaying) {
+                studio.stopPlayback();
+                updateTransportButton(false);
+            } else {
+                studio.startPlayback();
+                updateTransportButton(true);
+            }
+        });
+
+        // Update recording functionality
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('record-btn')) {
+                const trackId = e.target.closest('.track').dataset.trackId;
+                studio.recordArm(trackId);
+                e.target.classList.toggle('recording');
+            }
+        });
     </script>
 </body>
 </html> 
