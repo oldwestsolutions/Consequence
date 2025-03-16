@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio | Conseqence</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --dark-bg: #0a0a0d;
+            --darker-bg: #040408;
+            --accent: #7e3aed;
+            --accent-light: #9e62ff;
+            --text: #e2e2e6;
+            --text-dim: #8c8c9a;
+            --panel-bg: #1a1a1f;
+            --panel-border: rgba(126, 58, 237, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Grid Layout */
+        .studio-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;  /* Changed to 3 columns with middle being larger */
+            grid-template-rows: auto 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            height: 100vh;
+        }
+
+        /* Left column panels */
+        .left-panels {
+            grid-column: 1;
+            grid-row: 2 / span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Main sequencer in middle */
+        .main-sequencer {
+            grid-column: 2;
+            grid-row: 2 / span 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Right column panels */
+        .right-panels {
+            grid-column: 3;
+            grid-row: 2 / span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header stays full width */
+        .header {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: var(--panel-bg);
+            border-radius: 12px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 15px;
+            overflow: auto;
+        }
+
+        /* Components */
+        .transport-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background: rgba(126, 58, 237, 0.1);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .beat-machine {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .pad {
+            aspect-ratio: 1;
+            background: rgba(126, 58, 237, 0.1);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pad.active {
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .piano-roll {
+            height: 300px;
+            display: grid;
+            grid-template-columns: 50px 1fr;
+        }
+
+        .mixer-channel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .fader {
+            height: 150px;
+            writing-mode: bt-lr;
+            -webkit-appearance: slider-vertical;
+        }
+
+        .knob {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            position: relative;
+            cursor: pointer;
+        }
+
+        .effects-rack {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .effect-module {
+            background: rgba(126, 58, 237, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .visualizer {
+            width: 100%;
+            height: 100px;
+            background: rgba(126, 58, 237, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Panel Headers */
+        .panel-header {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: var(--accent-light);
+        }
+
+        /* Control Buttons */
+        .control-btn {
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .control-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="studio-container">
+        <!-- Header with transport controls -->
+        <div class="header">
+            <div class="logo">Conseqence Studio</div>
+            <div class="transport-controls">
+                <button class="control-btn" onclick="startAudio()">Start Audio</button>
+                <button class="control-btn" onclick="toggleTransport()">Play/Stop</button>
+                <button class="control-btn" onclick="resetTransport()">Reset</button>
+                <span id="transport-time">0:00</span>
+                <input type="range" min="60" max="200" value="120" oninput="changeTempo(this.value)">
+                <span id="tempo-display">120 BPM</span>
+                <button class="control-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Left Column -->
+        <div class="left-panels">
+            <!-- Mixer Panel -->
+            <div class="panel mixer-panel">
+                <h2 class="panel-header">Mixer</h2>
+                <div class="mixer-channels">
+                    <div class="mixer-channel">
+                        <span>Master</span>
+                        <input type="range" class="fader" orient="vertical">
+                        <div class="knob" data-param="pan"></div>
+                    </div>
+                    <!-- Add more mixer channels as needed -->
+                </div>
+            </div>
+
+            <!-- Piano Roll Panel -->
+            <div class="panel piano-panel">
+                <h2 class="panel-header">Piano Roll</h2>
+                <div class="piano-roll">
+                    <div id="piano-keys"></div>
+                    <div id="note-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Sequencer (Center) -->
+        <div class="panel main-sequencer">
+            <h2 class="panel-header">Main Sequencer</h2>
+            <div class="track-layout">
+                <div class="visualizer" id="main-visualizer"></div>
+                <!-- Tracks will be added here -->
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="right-panels">
+            <!-- Beat Machine -->
+            <div class="panel">
+                <h2 class="panel-header">Beat Machine</h2>
+                <div class="beat-machine" id="beat-pads"></div>
+            </div>
+
+            <!-- Effects Rack -->
+            <div class="panel">
+                <h2 class="panel-header">Effects</h2>
+                <div class="effects-rack">
+                    <div class="effect-module">
+                        <h3>Reverb</h3>
+                        <input type="range" oninput="updateReverb(this.value)">
+                    </div>
+                    <div class="effect-module">
+                        <h3>Delay</h3>
+                        <input type="range" oninput="updateDelay(this.value)">
+                    </div>
+                    <div class="effect-module">
+                        <h3>Filter</h3>
+                        <input type="range" oninput="updateFilter(this.value)">
+                    </div>
+                    <div class="effect-module">
+                        <h3>Distortion</h3>
+                        <input type="range" oninput="updateDistortion(this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Browser -->
+            <div class="panel">
+                <h2 class="panel-header">Sample Browser</h2>
+                <div class="sample-list">
+                    <!-- Sample list will be populated here -->
+                </div>
+            </div>
+
+            <!-- MIDI Controller -->
+            <div class="panel">
+                <h2 class="panel-header">MIDI Controller</h2>
+                <div class="midi-pads">
+                    <!-- MIDI pads will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        const synth = new Tone.PolySynth().toDestination();
+        const sampler = new Tone.Sampler({
+            urls: {
+                C4: "kick.wav",
+                D4: "snare.wav",
+                E4: "hihat.wav",
+                F4: "clap.wav"
+            },
+            baseUrl: "samples/"
+        }).toDestination();
+
+        // Initialize Tone.js
+        async function startAudio() {
+            await Tone.start();
+            console.log('Audio is ready');
+        }
+
+        // Transport controls
+        function toggleTransport() {
+            if (isPlaying) {
+                Tone.Transport.stop();
+                isPlaying = false;
+            } else {
+                Tone.Transport.start();
+                isPlaying = true;
+            }
+        }
+
+        function resetTransport() {
+            Tone.Transport.position = 0;
+        }
+
+        function changeTempo(value) {
+            Tone.Transport.bpm.value = value;
+            document.getElementById('tempo-display').textContent = `${value} BPM`;
+        }
+
+        // Beat Machine
+        const beatPads = document.getElementById('beat-pads');
+        const sequence = Array(16).fill(false);
+
+        for (let i = 0; i < 16; i++) {
+            const pad = document.createElement('div');
+            pad.className = 'pad';
+            pad.onclick = () => togglePad(i, pad);
+            beatPads.appendChild(pad);
+        }
+
+        function togglePad(index, pad) {
+            sequence[index] = !sequence[index];
+            pad.classList.toggle('active');
+        }
+
+        // Create beat sequence
+        const beatSeq = new Tone.Sequence((time, index) => {
+            if (sequence[index]) {
+                sampler.triggerAttackRelease('C4', '8n', time);
+            }
+        }, [...Array(16).keys()], '16n');
+
+        beatSeq.start(0);
+
+        // Piano Roll
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const pianoKeys = document.getElementById('piano-keys');
+        const noteGrid = document.getElementById('note-grid');
+        const noteSequence = {};
+
+        // Create piano keys and note grid
+        for (let octave = 7; octave >= 0; octave--) {
+            notes.forEach(note => {
+                const key = document.createElement('div');
+                key.className = `key ${note.includes('#') ? 'black' : 'white'}`;
+                key.onclick = () => playNote(`${note}${octave}`);
+                pianoKeys.appendChild(key);
+
+                // Create grid cells for this note
+                for (let step = 0; step < 16; step++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.onclick = () => toggleNote(`${note}${octave}`, step, cell);
+                    noteGrid.appendChild(cell);
+                }
+            });
+        }
+
+        function playNote(note) {
+            synth.triggerAttackRelease(note, '8n');
+        }
+
+        function toggleNote(note, step, cell) {
+            if (!noteSequence[step]) {
+                noteSequence[step] = [];
+            }
+            
+            const noteIndex = noteSequence[step].indexOf(note);
+            if (noteIndex === -1) {
+                noteSequence[step].push(note);
+                cell.classList.add('active');
+            } else {
+                noteSequence[step].splice(noteIndex, 1);
+                cell.classList.remove('active');
+            }
+        }
+
+        // Create piano sequence
+        const pianoSeq = new Tone.Sequence((time, index) => {
+            if (noteSequence[index]) {
+                noteSequence[index].forEach(note => {
+                    synth.triggerAttackRelease(note, '8n', time);
+                });
+            }
+        }, [...Array(16).keys()], '16n');
+
+        pianoSeq.start(0);
+
+        // Add new effect processing:
+        const reverb = new Tone.Reverb().toDestination();
+        const delay = new Tone.FeedbackDelay().toDestination();
+        const filter = new Tone.Filter().toDestination();
+        const distortion = new Tone.Distortion().toDestination();
+
+        // Effect update functions
+        function updateReverb(value) {
+            reverb.decay = value * 0.1;
+        }
+
+        function updateDelay(value) {
+            delay.delayTime.value = value * 0.01;
+        }
+
+        function updateFilter(value) {
+            filter.frequency.value = value * 100;
+        }
+
+        function updateDistortion(value) {
+            distortion.distortion = value * 0.01;
+        }
+
+        // Login check
+        function checkLogin() {
+            if (!sessionStorage.getItem('logged_in')) {
+                window.location.href = 'login';
+            }
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('logged_in');
+            window.location.href = 'login';
+        }
+
+        // Initialize
+        checkLogin();
+        Tone.Transport.bpm.value = 120;
+    </script>
+</body>
+</html> 

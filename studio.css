@@ -1,0 +1,119 @@
+:root {
+  --dark-bg: #0a0a0d;
+  --darker-bg: #040408;
+  --accent: #7e3aed;
+  --accent-light: #9e62ff;
+  --text: #e2e2e6;
+  --text-dim: #8c8c9a;
+  --panel-bg: #1a1a1f;
+  --panel-border: rgba(126, 58, 237, 0.2);
+}
+
+.studio-container {
+  display: grid;
+  grid-template-columns: 250px 1fr 250px;
+  grid-template-rows: 60px 1fr;
+  height: 100vh;
+  background: var(--dark-bg);
+  color: var(--text);
+}
+
+.top-bar {
+  grid-column: 1 / -1;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  justify-content: space-between;
+}
+
+.main-content {
+  grid-column: 2;
+  background: var(--darker-bg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 20px;
+  width: 90%;
+  max-width: 800px;
+}
+
+.beat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 20px;
+}
+
+.pad {
+  aspect-ratio: 1;
+  background: rgba(126, 58, 237, 0.1);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.pad.active {
+  background: var(--accent);
+}
+
+.knob-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.knob {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(to right, var(--accent), var(--accent-light));
+  cursor: pointer;
+}
+
+.transport-controls {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 10px;
+  background: var(--panel-bg);
+  border-radius: 8px;
+}
+
+.play-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Add more specific styles as needed */ 
