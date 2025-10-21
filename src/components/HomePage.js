@@ -109,7 +109,7 @@ const HomePage = () => {
                 <div style={{
                   width: '32px',
                   height: '32px',
-                  backgroundColor: '#1db954',
+                  backgroundColor: '#6B46C1',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -123,7 +123,7 @@ const HomePage = () => {
                 <div style={{
                   width: '32px',
                   height: '32px',
-                  backgroundColor: '#1db954',
+                  backgroundColor: '#6B46C1',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -137,7 +137,7 @@ const HomePage = () => {
                 <div style={{
                   width: '32px',
                   height: '32px',
-                  backgroundColor: '#1db954',
+                  backgroundColor: '#6B46C1',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -151,7 +151,7 @@ const HomePage = () => {
                 <div style={{
                   width: '32px',
                   height: '32px',
-                  backgroundColor: '#1db954',
+                  backgroundColor: '#6B46C1',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -212,7 +212,7 @@ const HomePage = () => {
                   <div style={{
                     width: '24px',
                     height: '24px',
-                    backgroundColor: '#1db954',
+                    backgroundColor: '#6B46C1',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -226,7 +226,7 @@ const HomePage = () => {
                   <div style={{
                     width: '24px',
                     height: '24px',
-                    backgroundColor: '#1db954',
+                    backgroundColor: '#6B46C1',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -240,7 +240,7 @@ const HomePage = () => {
                   <div style={{
                     width: '24px',
                     height: '24px',
-                    backgroundColor: '#1db954',
+                    backgroundColor: '#6B46C1',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -254,7 +254,7 @@ const HomePage = () => {
                   <div style={{
                     width: '24px',
                     height: '24px',
-                    backgroundColor: '#1db954',
+                    backgroundColor: '#6B46C1',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -268,8 +268,8 @@ const HomePage = () => {
               <Link to="/studio-showcase" className="btn btn-primary btn-lg" style={{ 
                 fontSize: '1.25rem', 
                 padding: '1rem 2rem',
-                backgroundColor: '#1db954',
-                borderColor: '#1db954'
+                backgroundColor: '#6B46C1',
+                borderColor: '#6B46C1'
               }}>
                 Explore The Studio
               </Link>
@@ -314,7 +314,7 @@ const HomePage = () => {
               <div style={{ 
                 fontSize: '1.5rem', 
                 fontWeight: 'bold', 
-                color: '#1db954', 
+                color: '#6B46C1', 
                 marginBottom: '1rem',
                 letterSpacing: '1px'
               }}>
@@ -342,7 +342,7 @@ const HomePage = () => {
                   <div style={{
                     width: '24px',
                     height: '24px',
-                    backgroundColor: '#1db954',
+                    backgroundColor: '#6B46C1',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -356,7 +356,7 @@ const HomePage = () => {
                   <div style={{
                     width: '24px',
                     height: '24px',
-                    backgroundColor: '#1db954',
+                    backgroundColor: '#6B46C1',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -370,7 +370,7 @@ const HomePage = () => {
                   <div style={{
                     width: '24px',
                     height: '24px',
-                    backgroundColor: '#1db954',
+                    backgroundColor: '#6B46C1',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -384,7 +384,7 @@ const HomePage = () => {
                   <div style={{
                     width: '24px',
                     height: '24px',
-                    backgroundColor: '#1db954',
+                    backgroundColor: '#6B46C1',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
